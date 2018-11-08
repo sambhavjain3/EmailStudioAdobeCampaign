@@ -1,0 +1,936 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml">   
+<head>     
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />     
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>      
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript"  src="https://yourserver/res/partners/jquery-te-1.4.0.min.js"></script> 
+    <link href="https://yourserver/res/partners/jquery-te-1.4.0.css" rel="stylesheet">
+    <script type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> 
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://yourserver/res/partners/b053ba621cf19e20793c1ef8cd227a15.css"/>
+    <script src="https://yourserver/res/partners/beautify-html.js"> </script>
+
+<%
+
+var delid="";
+
+delid= ctx.vars.selectedTemplate.toString();
+var delivery = nms.delivery.get(delid);
+
+tmp = delivery.content.html.source;
+
+ctx.vars.htmlContent = tmp.replace(/(?:\r\n|\r|\n)/g, " ");
+
+
+      
+      
+      
+var query = xtk.queryDef.create(
+  <queryDef schema="xtk:fileRes" operation="select" >
+    <select>
+        <node  expr="@useMd5AsFilename" />
+        <node expr="@name" />
+           <node expr="@md5" />
+        <node  expr="@label" sort="true"/>
+      </select>
+     
+      <orderBy>
+        <node expr="@created"   sort="1" sortDesc="1"/>
+      </orderBy>
+      <where >
+       <condition boolOperator="OR"  expr="lower(@originalName) like '%jpg'" />
+      
+              <condition boolOperator="OR"  expr="lower(@originalName) like '%png'" />
+              <condition  expr="lower(@originalName) like '%jpeg'" />
+      </where>
+  </queryDef>
+  )
+var images = query.ExecuteQuery();
+
+
+var query = xtk.queryDef.create(
+  <queryDef schema="nms:includeView" operation="select" >
+   <select>
+        <node expr="[source/html]"         sort="true"/>
+        <node  expr="@label"               sort="true"/>
+      </select>
+      <orderBy>
+        <node expr="@created"   sort="1" sortDesc="1"/>
+      </orderBy>
+      <where >
+        <condition expr="[folder/@name] = 'contentBlocks'"              />
+      </where>
+  </queryDef>
+  )
+var blocks = query.ExecuteQuery();
+
+var query =  xtk.queryDef.create(
+  <queryDef schema="nms:delivery" operation="select" >
+
+ <select>
+ <node  expr="@label"              />
+        <node  expr="@id"              />
+          <node  expr="@internalName"              />
+        <node  expr="data"   sort="true"/>
+      </select>
+      <where >
+        <condition boolOperator="AND" expr="@state = 0" />
+        <condition expr="[folder/@name] = 'nmsRootDelivery'"              />
+      </where>
+       <orderBy>
+        <node expr="@created"   sort="1" sortDesc="1"/>
+      </orderBy>
+        </queryDef>
+      )
+ var deliveries =   query.ExecuteQuery();   
+
+
+ 
+
+
+    
+      %>
+
+ 
+<title>Template Editor</title>
+<style>
+.blockRow {
+z-index:3 ;
+}
+
+.jumbotron {
+z-index:1 ;
+height: 90vh;
+overflow: auto; 
+background-color: #fff;
+}
+
+.selectedRow, .selectedRow:active {
+            background-color: #E7E7E7;
+            cursor: move;
+        }
+        
+.selectedText , .selectedHyperlink , .selectedSourceBlock
+{
+border: 2px solid #ff2222;
+}
+
+.selectedImg
+{
+border: 2px solid #ff2222;
+}
+
+.replaceImg
+{
+border: 4px solid #22ee22;
+}
+
+.overFlowText
+{
+
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block; background-color: #333; color: #ddd;
+    text-align:center;
+}
+
+.imgThumbs
+{
+height:100px !important;
+
+}
+
+#contentEditor, #listDeliveries
+{
+    max-height: calc(100vh - 225px);
+    overflow: auto;
+}
+
+
+.outerDivArrangeBlockButtons
+{
+
+background-color:#333;
+height:40px;
+}
+
+
+.arrangeBlockButtons
+{
+
+display:inline;
+
+color:#ddd;
+list-style-type:none;
+
+
+}
+
+.arrangeBlockButtons li
+{
+
+display:block;
+float:right;
+width:30px;
+margin-top:10px;
+cursor:pointer;
+
+
+
+}
+
+.arrangeBlocksDiv
+{
+border: 2px solid #ff2222;
+margin:10px;
+
+
+}
+
+div .list-group-item 
+{
+
+cursor:pointer;
+
+}
+
+.list-group-item:hover
+{
+
+background-color:#ecf0f1;
+}
+
+.selectedDelivery
+{
+background-color:#ecf0f1
+}
+
+.exportDelivery
+{
+cursor:pointer;
+}
+
+.exportDelivery:hover
+{
+background-color:#ecf0f1
+}
+
+
+</style>   
+</head>    
+<body style="" class="">
+<nav class="navbar navbar-default navbar-fixed-top">
+<div class="container-fluid">
+<div class="navbar-header"><a class="navbar-brand" href="#"> <!--  <img alt="Content Editor" src="...">  -->Email Studio </a></div>
+</div>
+</nav>
+<div class="container-fluid" style="background-color: #f3f3f3;">
+<div class="row">
+<div class="col-md-12">
+<ul class="nav nav-tabs">
+<li class="active"><a href="#">Home</a></li>
+<li><a href="#">Profile</a></li>
+<li class="disabled"><a href="#">Messages</a></li>
+<li class="dropdown pull-right"><a class="dropdown-toggle" href="#" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
+<ul class="dropdown-menu">
+<li><a href="#">Action</a></li>
+<li><a href="#">Another action</a></li>
+<li><a href="#">Something else here</a></li>
+<li class="divider"></li>
+<li><a href="#">Separated link</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<br />
+<div class="row">
+<div class="col-md-2">
+<div class="list-group"><a class="list-group-item active" href="#">Content Blocks</a> <% for each(var q in blocks.includeView) { %>
+<div class="list-group-item blockRow" data-blockcontent="<%= q.source.html %>"><%= q.@label %></div>
+<% } %></div>
+</div>
+<div class="col-md-8">
+<div class="jumbotron container-cell" id="templateFrame"></div>
+</div>
+<div class="col-md-2">
+<div class="list-group"><a class="list-group-item active" href="#">Toolbar</a>
+<div class="list-group-item" id="btnArrangeBlocks">Arrange Blocks</div>
+<div class="list-group-item" id="btnEditContent">Edit Text/Images</div>
+<div class="list-group-item" id="btnEditHyperlinks">Edit Hyperlinks</div>
+<div class="list-group-item" id="btnEditSource">Edit Source</div>
+<div class="list-group-item" id="btnExport">Export to Delivery</div>
+<div class="list-group-item" id="btnSaveAsTemplate">Save as Template</div>
+<div class="list-group-item" id="btnGoBack">Select Template</div>
+</div>
+</div>
+<!-- Images Modal -->
+<div tabindex="-1" class="modal fade" id="myModal" role="dialog" aria-labelledby="myModalLabel">
+<div class="modal-dialog modal-lg" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input149690369845784" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<div class="row">
+<div>
+<div class="thumbnail"><img class="nlui-widget" id="selectedImage" style="height: 150px;" unselectable="on" />
+<div class="caption"><label for="basic-url">Selected Image :</label>
+<div class="input-group"><span class="input-group-addon" id="basic-addon3">Edit Alt Text</span> <input class="form-control" id="selectedImageAltText" aria-describedby="basic-addon3" type="text" /> <span class="input-group-btn"> <button class="btn btn-primary" id="btnReplaceImage" type="button">Update Image</button> <button class="btn btn-default" id="input14969036984578" type="button" data-dismiss="modal">Cancel</button> </span></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="modal-body" id="contentEditor" style="height: 50vh;"><% var i=1; for each(var q in images.fileRes) { var fileurl; var ext = q.@name; extAr = ext.split('.'); extAr1 = extAr[1] ; if(q.@useMd5AsFilename==1) { fileurl=q.@md5 +'.'+ extAr1; } else { fileurl=q.@name ;} %> <% if(i%3==0) { %>
+<div class="row"><%}%>
+<div class="col-sm-6 col-md-4">
+<div class="thumbnail"><img class="imgThumbs nlui-widget" src="https://yourserver/res/partners/<%= fileurl %>" unselectable="on" />
+<div class="caption"><span class=" overFlowText"><%= q.@label %></span></div>
+</div>
+</div>
+<% if(i%3==0) { %></div>
+<%} i++; } %> <!--
+<table><% for each(var q in images.fileRes) { var fileurl; var ext = q.@name; extAr = ext.split('.'); extAr1 = extAr[1] ; if(q.@useMd5AsFilename==1) { fileurl=q.@md5 +'.'+ extAr1; } else { fileurl=q.@name ;} %>
+<tbody>
+<tr>
+<td style="width: 30%; height: 100px;"><span style="top: 0px; display: block; background-color: #333; color: #ddd;"><%= q.@label %></span> <img class="imgThumbs" src="https://yourserver/res/partners/<%= fileurl %>" unselectable="on" /></td>
+</tr>
+<% }%></tbody>
+</table>
+--></div>
+<div class="modal-footer"></div>
+</div>
+</div>
+</div>
+<!-- Modal -->
+<div tabindex="-1" class="modal fade" id="deliveryModal" role="dialog" aria-labelledby="deliveryModalLabel">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input149690369845784" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title" id="deliveryModalLabel">Select Delivery to Update</h4>
+</div>
+<div class="modal-body" id="listDeliveries">
+<table><% for each(var q in deliveries.delivery) { %>
+<tbody>
+<tr class="exportDelivery" data-id="<%= q.@id %>">
+<td style="width: 50px;"><input type="radio" /></td>
+<td><%= q.@label %> (<%= q.@internalName %> )</td>
+</tr>
+<% }%></tbody>
+</table>
+</div>
+<div class="modal-footer "><button class="btn btn-default" id="input14969036984578" type="button" data-dismiss="modal">Close</button> <button class="btn btn-primary" id="btnUpdateDelivery" type="button">Update Delivery</button></div>
+</div>
+</div>
+</div>
+<!-- Modal -->
+<div tabindex="-1" class="modal fade" id="hyperlinkModal" role="dialog" aria-labelledby="hyperlinkModalLabel">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input14969036984584" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title" id="hyperlinkModalLabel">Edit Hyperlinks</h4>
+</div>
+<div class="modal-body" id="bodyHyperLinkModal"><form class="form-horizontal">
+<div class="form-group"><label class="col-sm-2 control-label" for="inputEmail3">URL</label>
+<div class="col-sm-10"><input class="form-control" id="inputHyperlinkURL" type="text" placeholder="" /></div>
+</div>
+<div class="form-group"><label class="col-sm-2 control-label" for="inputPassword3">Title</label>
+<div class="col-sm-10"><input class="form-control" id="inputHyperlinkTitle" type="text" placeholder="" /></div>
+</div>
+</form></div>
+<div class="modal-footer "><button class="btn btn-default" id="input14969036984578" type="button" data-dismiss="modal">Close</button> <button class="btn btn-primary" id="btnUpdateHyperLink" type="button">Update</button></div>
+</div>
+</div>
+</div>
+<!-- source Modal -->
+<div tabindex="-1" class="modal fade" id="sourceModal" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input154165788146457" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title">Edit HTML Source</h4>
+</div>
+<div class="modal-body"><label for="basic-url"></label><br />
+<div class="input-group  col-md-12"></div>
+</div>
+<div class="modal-footer"><button class="btn btn-default" id="input15416578814645" type="button" data-dismiss="modal">Close</button> <button class="btn btn-primary" id="btnSaveSource" type="button">Save Source</button></div>
+</div>
+<!-- /.modal-content --></div>
+<!-- /.modal-dialog --></div>
+<!-- /.modal --> <!-- template Modal -->
+<div tabindex="-1" class="modal fade" id="saveTemplateModal" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input154165788146475" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title">Save as Template</h4>
+</div>
+<div class="modal-body"><label for="basic-url"></label><br />
+<div class="input-group"><span class="input-group-addon" id="basic-addon3">Template Name</span> <input class="form-control" id="templateName" aria-describedby="basic-addon3" type="text" /></div>
+</div>
+<div class="modal-footer"><button class="btn btn-default" id="input154165788146495" type="button" data-dismiss="modal">Close</button> <button class="btn btn-primary" id="btnSaveTemplate" type="button">Save Template</button></div>
+</div>
+<!-- /.modal-content --></div>
+<!-- /.modal-dialog --></div>
+<!-- /.modal -->
+<div tabindex="-1" class="modal fade" id="messageBox" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input154165788146415" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title">Modal title</h4>
+</div>
+<div class="modal-body" id="messageBoxBody">
+<p>One fine body&hellip;</p>
+</div>
+<!-- <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>  --></div>
+<!-- /.modal-content --></div>
+<!-- /.modal-dialog --></div>
+<!-- /.modal -->
+<script type="text/javascript">// <![CDATA[
+htmlContent = $("<div />").html('<%= ctx.vars.htmlContent %>').text();
+var tmp = htmlContent.split(/<body/i);
+
+htmlContentHeader = tmp[0];
+var tmp1 =  tmp[1].split(/>/i);
+bodyStyle = tmp1[0];
+if(bodyStyle == undefined)
+{
+bodyStyle = "";
+}
+var tmp = htmlContent.split(/<\/body>/i);
+
+htmlContentFooter = tmp[1];
+
+
+var tmp = htmlContentHeader.split(/<style>|<style type="text\/css">/i);
+
+var tmp2 = tmp[1];
+if(tmp2!== undefined)
+{
+var tmp3 = tmp2.split(/<\/style>/i);
+var htmlStyle = tmp3[0];
+
+if(htmlStyle != undefined || htmlStyle !='')
+{
+htmlStyle = "<style>" + htmlStyle + "</style>";
+
+$("head").append(htmlStyle);
+}
+}
+
+var body = htmlContent.match(/<body[^>]*>[\s\S]*<\/body>/gi);
+
+
+$("#templateFrame").append(body);
+
+$(".blockRow").draggable({
+      helper: function(){
+          var selected = $('selectedRow');
+        if (selected.length === 0) {
+          selected = $(this).addClass('selectedRow');
+        }
+        var container = $('<div/>').attr('id', 'draggingContainer').attr('style','z-index:3');
+    container.append(selected.removeClass("selectedRow").data("blockcontent"));
+ 
+    return container;
+      }
+ });
+
+$(".container-cell").droppable({
+    drop: function (event, ui) {
+    $(this).append(ui.helper.children());
+    $('.selectedRow').remove();
+    }
+}); //.sortable();
+
+
+function enableEditContent()
+
+{
+
+$("#btnEditContent").html("Disable Editing Content");
+
+$("#templateFrame").find("p, h1, h2, h3, span, div, td").addClass("tmpClassEnableTextEdit");
+
+$(".tmpClassEnableTextEdit").on("mouseenter", function () {
+
+$(this).addClass("selectedText");
+$(this).attr("contenteditable","true");
+
+});
+
+$(".tmpClassEnableTextEdit").on("mouseleave",  function () {
+
+$(this).removeClass("selectedText");
+$(this).attr("contenteditable","false");
+
+});
+
+
+$("#templateFrame").find("img").addClass("tmpClassEnableImageEdit");
+
+$(".tmpClassEnableImageEdit").on("mouseenter",  function () {
+
+$(this).addClass("selectedImg");
+
+
+});
+
+
+
+$(".tmpClassEnableImageEdit").on("mouseleave",  function () {
+
+$(this).removeClass("selectedImg");
+
+
+});
+
+$(".tmpClassEnableImageEdit").on("click", function () {
+$(".imgTobeReplaced").removeClass("imgTobeReplaced");
+$(this).addClass("imgTobeReplaced");
+
+$("#selectedImage").prop("src",$(this).prop("src"));
+$("#selectedImageAltText").val($(this).attr("alt"));
+$('#myModal').modal();
+
+});
+
+/*
+$("#templateFrame").on("mouseenter", "img", function () {
+
+$(this).addClass("selectedImg");
+
+
+});
+
+
+
+$("#templateFrame").on("mouseleave", "img", function () {
+
+$(this).removeClass("selectedImg");
+
+
+});
+
+$("#templateFrame").on("click", "img", function () {
+$(".imgTobeReplaced").removeClass("imgTobeReplaced");
+$(this).addClass("imgTobeReplaced")
+$('#myModal').modal();
+
+});
+*/
+}
+
+function disableEditContent()
+{
+$("#btnEditContent").html("Edit Content");
+$(".tmpClassEnableTextEdit").unbind('mouseenter').unbind('mouseleave').removeClass("tmpClassEnableTextEdit").removeAttr( "contenteditable" );
+
+
+$(".tmpClassEnableImageEdit").unbind('mouseenter').unbind('mouseleave').unbind('click').removeClass("tmpClassEnableImageEdit");
+
+
+}
+
+$("#contentEditor").on("mouseenter", "img", function () {
+
+$(this).addClass("selectedImg");
+
+
+});
+
+
+
+$("#contentEditor").on("mouseleave", "img", function () {
+
+$(this).removeClass("selectedImg");
+
+
+});
+
+
+$("#contentEditor").on("click", "img", function () {
+
+$(".replaceImg").removeClass("replaceImg");
+
+$(this).addClass("replaceImg");
+$("#selectedImage").prop('src',$(this).prop('src'));
+
+
+});
+
+
+
+
+
+$("#btnReplaceImage").on("click", function () {
+$(".imgTobeReplaced").prop("src",$('.replaceImg').prop("src")).attr("alt",$("#selectedImageAltText").val()).removeClass("imgTobeReplaced");
+$(".replaceImg").removeClass("replaceImg");
+$('#myModal').modal('hide');
+});
+
+
+$("#btnArrangeBlocks").on('click',function() {
+if($(this).html()=="Arrange Blocks")
+{
+
+enableArrangeBlocks();
+}
+else
+{
+ disableArrangeBlocks();
+}
+});
+
+function enableArrangeBlocks()
+{
+
+$("#btnArrangeBlocks").html("Disable Arranging Blocks");
+disableEditContent();
+   disableEditHyperlinks();
+      disableEditSource();
+$('.contentBox').each(function(){
+    $(this).wrapAll('<div class="arrangeBlocksDiv"></div>');
+
+});
+    $(".arrangeBlocksDiv").prepend('<div class="outerDivArrangeBlockButtons"><ul class="arrangeBlockButtons"><li class="removeBlock"><span class="glyphicon glyphicon-remove" aria-hidden="true"></span></li><li class="moveBlockUp"><span class="glyphicon glyphicon-arrow-up" aria-hidden="true"></span></li><li class="moveBlockDown"><span class="glyphicon glyphicon-arrow-down" aria-hidden="true"></span></li></ul></div>');
+
+initArrangeBlockButtons();
+
+}
+
+function initArrangeBlockButtons()
+{
+
+$(".moveBlockDown").unbind();
+$(".removeBlock").unbind();
+$(".moveBlockUp").unbind();
+
+$(".removeBlock").on('click',function() {
+
+$(this).closest(".arrangeBlocksDiv").remove();
+});
+
+
+$(".moveBlockUp").on('click',function() {
+
+currentBlock = $(this).closest(".arrangeBlocksDiv").html();
+upperBlock = $(this).closest(".arrangeBlocksDiv").prev(".arrangeBlocksDiv").html();
+if(upperBlock != undefined)
+{
+$(this).closest(".arrangeBlocksDiv").prev(".arrangeBlocksDiv").html(currentBlock);
+$(this).closest(".arrangeBlocksDiv").html(upperBlock);
+
+initArrangeBlockButtons();
+}
+});
+
+
+$(".moveBlockDown").on('click',function() {
+currentBlock = $(this).closest(".arrangeBlocksDiv").html();
+lowerBlock = $(this).closest(".arrangeBlocksDiv").next(".arrangeBlocksDiv").html();
+
+if(lowerBlock != undefined)
+{
+$(this).closest(".arrangeBlocksDiv").next(".arrangeBlocksDiv").html(currentBlock);
+$(this).closest(".arrangeBlocksDiv").html(lowerBlock);
+initArrangeBlockButtons();
+}
+});
+
+}
+
+function disableArrangeBlocks()
+{
+$('.contentBox').each(function(){
+if($(this).parent().hasClass("arrangeBlocksDiv")==true)
+{
+$(this).unwrap();
+}
+});
+$(".outerDivArrangeBlockButtons").remove();
+$("#btnArrangeBlocks").html("Arrange Blocks");
+}
+
+
+$("#btnEditContent").on('click',function() {
+if($("#btnEditContent").html()=="Disable Editing Content")
+{
+
+disableEditContent();
+}
+else
+{
+disableArrangeBlocks();
+   disableEditHyperlinks();
+   disableEditSource()
+enableEditContent();
+
+}
+
+});
+
+
+$("#btnEditHyperlinks").on('click',function() {
+    if($("#btnEditHyperlinks").html()=="Disable Editing Hyperlinks")
+    {
+       
+        disableEditHyperlinks();
+      }
+    else
+    {
+        disableArrangeBlocks();
+        disableEditContent();
+        disableEditSource()
+        enableEditHyperlinks();
+       
+    }
+
+});
+
+$("#btnUpdateHyperLink").on("click",function(){
+
+$(".editHyperlink").attr("href",$("#inputHyperlinkURL").val()).text($("#inputHyperlinkTitle").val()).removeClass("editHyperlink");
+$('#hyperlinkModal').modal('hide');
+
+});
+
+function disableEditHyperlinks()
+{
+$(".tmpClassEnableTextHyperlinks").unbind().removeClass("tmpClassEnableTextHyperlinks");
+ $("#btnEditHyperlinks").html("Edit Hyperlinks");
+
+
+
+}
+
+function enableEditHyperlinks()
+{
+ $("#btnEditHyperlinks").html("Disable Editing Hyperlinks");
+$("#templateFrame").find("a").addClass("tmpClassEnableTextHyperlinks");
+
+$(".tmpClassEnableTextHyperlinks").on("mouseenter", function () {
+
+$(this).addClass("selectedHyperlink");
+
+
+$(".selectedHyperlink").on("click",function(e){
+
+e.preventDefault();
+$(this).addClass("editHyperlink");
+$('#hyperlinkModal').modal();
+$("#inputHyperlinkURL").val($(this).attr('href'));
+$("#inputHyperlinkTitle").val($(this).text());
+
+
+});
+
+
+});
+
+$(".tmpClassEnableTextHyperlinks").on("mouseleave",  function () {
+
+$(this).removeClass("selectedHyperlink");
+$(".selectedHyperlink").unbind();
+
+});
+
+
+
+
+}
+
+
+$("#btnExport").on('click',function() {
+
+ disableArrangeBlocks();
+        disableEditContent();
+        disableEditSource();
+      disableEditHyperlinks();
+
+$('#deliveryModal').modal();
+
+
+});
+
+$(".exportDelivery").on('click',function(){
+
+$(".exportDelivery").removeClass("selectedDelivery").find("input").prop("checked",false);
+$(this).addClass("selectedDelivery").find("input").prop("checked",true);
+
+});
+
+$("#btnUpdateDelivery").on('click',function(){
+
+deliveryToUpdate = $(".selectedDelivery").data("id");
+var msgTxt = getLatestHTML();
+
+var jqxhr = $.ajax( {
+
+url:"../dt/contentEditorHelper.jssp",
+data: {object: "delivery", oid: deliveryToUpdate, msg: msgTxt }, 
+type:"POST",
+success: function(){
+
+$('#deliveryModal').modal('hide');
+$("#messageBoxBody").html("Delivery Updated Successfully");
+$("#messageBox").modal();
+
+
+},
+
+  error: function(XMLHttpRequest, textStatus, errorThrown) { 
+    alert(XMLHttpRequest.responseText);
+                   
+
+},
+  });
+  
+  
+
+});
+
+function getLatestHTML()
+{
+var msgTxt = $("#templateFrame").html();
+msgTxt = htmlContentHeader + '<body ' +  bodyStyle +' >' + msgTxt +'
+// ]]></script>
+</div>
+</div>
+</body>'+ htmlContentFooter;
+msgTxt = html_beautify(msgTxt);
+return msgTxt;
+
+}
+
+$("#btnSaveAsTemplate").on("click",function(){
+
+ disableArrangeBlocks();
+        disableEditContent();
+      disableEditHyperlinks();
+      $('#saveTemplateModal').modal();
+      
+      $("#btnSaveTemplate").on("click",function(){
+          templateName = $("#templateName").val();
+          var msgTxt = getLatestHTML();
+          var jqxhr = $.ajax( {
+
+                                url:"../dt/contentEditorHelper.jssp",
+                                data: {object: "template", msg: msgTxt , name:templateName }, 
+                                type:"POST",
+                                success: function(){
+                                
+                                $('#templateModal').modal('hide');
+                                $("#messageBoxBody").html("Template Saved Successfully");
+                                $("#messageBox").modal();
+                                
+                                
+                                },
+                                
+                                  error: function(XMLHttpRequest, textStatus, errorThrown) { 
+                                    alert(XMLHttpRequest.responseText);
+                                                   
+                                
+                                },
+                                  });
+  
+      });
+      
+
+});
+
+$("#btnEditSource").on("click",function() {
+
+        if($(this).text()=="Edit Source")
+        {
+                disableArrangeBlocks();
+                disableEditContent();
+                disableEditHyperlinks();
+                enableEditSource();
+                
+        }
+        else
+        {
+       
+                disableEditSource();
+        }
+               
+
+
+
+});
+
+
+function enableEditSource()
+{
+
+$("#btnEditSource").text("Disable Editing Source");
+ $(".contentBox").addClass("tmpClassEnableSourceEdit");
+
+        $(".tmpClassEnableSourceEdit").on("mouseenter", function () {
+                            
+                            $(this).addClass("selectedSourceBlock");
+        
+        
+                            $(".selectedSourceBlock").on("click",function(e){
+                            
+                            
+                            $(this).addClass("editSource");
+                            $("#htmlSource").val($(this).html());
+                            $("#sourceModal").modal();                
+                            
+                            
+                            
+                            });
+        
+        
+        });
+
+        $(".tmpClassEnableSourceEdit").on("mouseleave",  function () {
+        
+        $(this).removeClass("selectedSourceBlock");
+        $(".selectedSourceBlock").unbind();
+        
+        });
+
+
+}
+
+function disableEditSource()
+{
+        $("#btnEditSource").text("Edit Source");
+       $(".tmpClassEnableSourceEdit").unbind();
+       $(".contentBox").removeClass("tmpClassEnableSourceEdit");
+}
+
+$("#btnSaveSource").on("click",function(){
+          
+          $(".editSource").html($("#htmlSource").val()).unbind().removeClass("editSource");
+          $("#sourceModal").modal('hide'); 
+          disableEditSource();
+          enableEditSource();
+          
+
+});
+
+
+
+$("#btnGoBack").on('click',function(){
+location.href = document.referrer;
+});
+
+$(document).on("click", ".blockRow", function () {
+    $(this).toggleClass("selectedRow");
+});
+// ]]></script>
+</div>
+</div>
+
+</body> </html>
