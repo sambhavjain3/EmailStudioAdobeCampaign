@@ -1,0 +1,63 @@
+<%@ page import="/nl/core/shared/nl.js" %><%
+
+
+  
+logon("sjain","sjain");
+  
+  loadLibrary("xtk:common.js");
+  Format.setLanguage("en-us");
+
+
+
+  // headers to disable cache
+  response.addHeader("Pragma", "no-cache")
+  response.addHeader("Cache-Control", "no-cache");
+  response.addHeader("Expires", new Date().toGMTString());
+  response.setContentType("text/html;charset=utf-8")
+
+
+  var object = request.getParameter("object");
+  if ( object == undefined || object == '') object = "workflow";
+  
+  var oid = request.getParameter("oid");
+    if ( oid == undefined || oid == '') oid = "0";
+    
+      var msg = request.getParameter("msg");
+    if ( msg == undefined || msg == '') msg = "";
+    
+     var name = request.getParameter("name");
+    if ( name == undefined || name == '') name = "";
+    
+  
+              if(object == "delivery")
+              {
+              var deliveryToUpdate = nms.delivery.load(oid);
+              deliveryToUpdate.content.html.source = msg;
+              deliveryToUpdate.save();
+              document.write('{ "Response": "Success"}');
+              }
+
+              if(object == "template")
+              {
+                    var deliveryToUpdate = nms.delivery.create(
+                    {delivery:  
+                        {                          
+                          "folder-id":"1167",
+                          label: name,
+                          isModel:1,
+                          deliveryMode:1
+                        }                    
+                    });
+                    
+              deliveryToUpdate.content.html.source = msg;
+
+              deliveryToUpdate.save();
+              
+              document.write('{ "Response": "Success"}');
+              }
+              
+                
+
+  
+
+%>
