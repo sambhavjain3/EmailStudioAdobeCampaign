@@ -1,0 +1,247 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">   
+<head>     
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
+<meta property="og:image" content="https://yourserver/res/partners/b0d40ce8df0b7d997a94f98db349acf4.jpg" />    
+<link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>      
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="https://yourserver/res/partners/524ae0cfb507a786266d32d9a16ccc42.js"></script>
+
+<%
+
+
+var query =  xtk.queryDef.create(
+  <queryDef schema="nms:delivery" operation="select" >
+
+ <select>
+ <node  expr="@label"              />
+        <node  expr="@id"              />
+          <node  expr="@internalName"              />
+             <node  expr="[content/html/source]"              />
+        <node  expr="data"   sort="true"/>
+      </select>
+      <where >
+        <condition boolOperator="AND" expr="@messageType = 0" />
+        <condition expr="[folder/@name] = 'nmsDeliveryModel'"              />
+      </where>
+      <orderBy>
+        <node expr="@created"   sort="1" sortDesc="1"/>
+      </orderBy>
+        </queryDef>
+      )
+ var templates =   query.ExecuteQuery();   
+
+ 
+
+
+    
+      %>
+
+<script type="text/javascript"  src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<script type="text/javascript"  src="https://yourserver/res/partners/jquery-te-1.4.0.min.js"></script> 
+    <link href="https://yourserver/res/partners/jquery-te-1.4.0.css" rel="stylesheet">
+    <script type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> 
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
+<link rel="stylesheet" type="text/css" href="https://yourserver/res/partners/b053ba621cf19e20793c1ef8cd227a15.css"/>
+ 
+<title>Template Editor</title>
+<style>
+.blockRow {
+z-index:3 ;
+}
+
+.jumbotron {
+z-index:1 ;
+height: 90vh;
+overflow: auto; 
+background-color: #fff;
+}
+
+.overFlowText
+{
+
+  white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    }
+.selectedRow, .selectedRow:active {
+            background-color: #E7E7E7;
+            cursor: move;
+        }
+        
+.selectedText
+{
+border: 2px solid #ff2222;
+}
+
+.selectedImg
+{
+border: 2px solid #ff2222;
+}
+
+.replaceImg
+{
+border: 4px solid #22ee22;
+}
+
+.imgThumbs
+{
+ height:200px;
+}
+
+#contentEditor, #listDeliveries
+{
+    max-height: calc(100vh - 225px);
+    overflow: auto;
+}
+
+
+.outerDivArrangeBlockButtons
+{
+
+background-color:#333;
+height:40px;
+}
+
+
+.arrangeBlockButtons
+{
+
+display:inline;
+
+color:#ddd;
+list-style-type:none;
+
+
+}
+
+.arrangeBlockButtons li
+{
+
+display:block;
+float:right;
+width:30px;
+margin-top:10px;
+cursor:pointer;
+
+
+
+}
+
+.arrangeBlocksDiv
+{
+border: 2px solid #ff2222;
+margin:10px;
+
+
+}
+
+div .list-group-item 
+{
+
+cursor:pointer;
+
+}
+
+.list-group-item:hover
+{
+
+background-color:#ecf0f1;
+}
+
+.selectedDelivery
+{
+background-color:#ecf0f1
+}
+
+.exportDelivery
+{
+cursor:pointer;
+}
+
+.exportDelivery:hover
+{
+background-color:#ecf0f1
+}
+
+.templatePreview{
+border:0px;
+width:100%;
+}
+
+</style>   
+</head>    
+<body style="" class="">
+<nav class="navbar navbar-default navbar-fixed-top">
+<div class="container-fluid">
+<div class="navbar-header"><a class="navbar-brand" href="#"><!--  <img alt="Content Editor" src="https://yourserver/res/partners/b64f6845e3c0bea8ce6e2a7bee61601f.png"> -->Email Studio </a></div>
+</div>
+</nav>
+<div class="container-fluid" style="background-color: #f3f3f3;">
+<div class="row">
+<div class="col-md-12">
+<ul class="nav nav-tabs">
+<li class="active"><a href="#">Home</a></li>
+<li><a href="#">Profile</a></li>
+<li class="disabled"><a href="#">Messages</a></li>
+<li class="dropdown pull-right"><a class="dropdown-toggle" href="#" data-toggle="dropdown">Dropdown<strong class="caret"></strong></a>
+<ul class="dropdown-menu">
+<li><a href="#">Action</a></li>
+<li><a href="#">Another action</a></li>
+<li><a href="#">Something else here</a></li>
+<li class="divider"></li>
+<li><a href="#">Separated link</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<br />
+<div class="row">
+<div class="col-md-2"></div>
+<div class="col-md-8">
+<div class="jumbotron" id="templateFrame"><% var i=1; for each(var q in templates.delivery) { %> <% if(i%3==0) {%>
+<div class="row"><%}%>
+<div class="col-sm-6 col-md-4">
+<div class="thumbnail imgThumbs">
+<div class="caption ">
+<h3 class="overFlowText"><%= q.@internalName %></h3>
+<p class="overFlowText"><%= q.@label %></p>
+<p><a class="btn btn-default btnSelectTemplate" role="button" href="#" data-id="<%= q.@id %>">Select</a></p>
+</div>
+</div>
+</div>
+<% if(i%3==0) {%></div>
+<%} i++;%> <%}%></div>
+</div>
+<div class="col-md-2">
+<div class="fade"><form><button id="input149750802379727" type="submit" data-nl-transition="next" data-nl-action="next" data-nl-bindto="action">Next</button></form></div>
+</div>
+<!-- Modal -->
+<div tabindex="-1" class="modal fade" id="messageBox" role="dialog">
+<div class="modal-dialog" role="document">
+<div class="modal-content">
+<div class="modal-header"><button class="close" id="input149750352755556" aria-label="Close" type="button" data-dismiss="modal"><span aria-hidden="true">&times;</span></button>
+<h4 class="modal-title">Modal title</h4>
+</div>
+<div class="modal-body" id="messageBoxBody"></div>
+<!-- <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>  --></div>
+<!-- /.modal-content --></div>
+<!-- /.modal-dialog --></div>
+<!-- /.modal -->
+<script type="text/javascript">// <![CDATA[
+$(".btnSelectTemplate").on('click',function(){
+
+   document.controller.setValue('/ctx/vars/selectedTemplate', $(this).data("id") , 'vars_selectedTemplate');
+          document.controller.submit('next');
+});
+// ]]></script>
+</div>
+</div>
+</body> </html>
