@@ -1,5 +1,5 @@
 # EmailStudio
-Email Studio is a Webapp providing WYSWYG editor for modifying email templates in AC v6.1
+Email Studio is a Webapp providing WYSWYG editor for modifying email templates in Adobe Campaign (AC v6.1)
 Once configured, this webapp can be used by non technical users to modify the email templates and use them in campaigns with out any dependency on devs. 
 
 Features:
