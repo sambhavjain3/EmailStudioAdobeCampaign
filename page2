@@ -13,12 +13,12 @@
 
 
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<script type="text/javascript"  src="https://yourserver/res/partners/jquery-te-1.4.0.min.js"></script> 
-    <link href="https://yourserver/res/partners/jquery-te-1.4.0.css" rel="stylesheet">
+<script type="text/javascript"  src="https://yourserver/res/jquery-te.js"></script> 
+    <link href="https://yourserver/res/jquery-te.css" rel="stylesheet">
     <script type="text/javascript"  src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script> 
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"/>
-<link rel="stylesheet" type="text/css" href="https://yourserver/res/partners/b053ba621cf19e20793c1ef8cd227a15.css"/>
-    <script src="https://yourserver/res/partners/beautify-html.js"> </script>
+<link rel="stylesheet" type="text/css" href="https://yourserver/res/bootstrap.css"/>
+    <script src="https://yourserver/res/beautify-html.js"> </script>
 
 <%
 
@@ -294,7 +294,7 @@ background-color:#ecf0f1
 <div class="modal-body" id="contentEditor" style="height: 50vh;"><% var i=1; for each(var q in images.fileRes) { var fileurl; var ext = q.@name; extAr = ext.split('.'); extAr1 = extAr[1] ; if(q.@useMd5AsFilename==1) { fileurl=q.@md5 +'.'+ extAr1; } else { fileurl=q.@name ;} %> <% if(i%3==0) { %>
 <div class="row"><%}%>
 <div class="col-sm-6 col-md-4">
-<div class="thumbnail"><img class="imgThumbs nlui-widget" src="https://yourserver/res/partners/<%= fileurl %>" unselectable="on" />
+<div class="thumbnail"><img class="imgThumbs nlui-widget" src="https://yourserver/res/<%= fileurl %>" unselectable="on" />
 <div class="caption"><span class=" overFlowText"><%= q.@label %></span></div>
 </div>
 </div>
@@ -303,7 +303,7 @@ background-color:#ecf0f1
 <table><% for each(var q in images.fileRes) { var fileurl; var ext = q.@name; extAr = ext.split('.'); extAr1 = extAr[1] ; if(q.@useMd5AsFilename==1) { fileurl=q.@md5 +'.'+ extAr1; } else { fileurl=q.@name ;} %>
 <tbody>
 <tr>
-<td style="width: 30%; height: 100px;"><span style="top: 0px; display: block; background-color: #333; color: #ddd;"><%= q.@label %></span> <img class="imgThumbs" src="https://yourserver/res/partners/<%= fileurl %>" unselectable="on" /></td>
+<td style="width: 30%; height: 100px;"><span style="top: 0px; display: block; background-color: #333; color: #ddd;"><%= q.@label %></span> <img class="imgThumbs" src="https://yourserver/res/<%= fileurl %>" unselectable="on" /></td>
 </tr>
 <% }%></tbody>
 </table>
