@@ -1,6 +1,16 @@
 # adobeCampaignClassic
 AC codes
 Webapp to allow WYSWYG editor for email templates in AC v6.1
+Once configured, this webapp can be used by non technical users to modify the email templates and use them in campaigns with out any dependency on devs. 
+
+Features:
+1. Arrange Bloacks
+2. Add/Drop blocks from personalization blocks from AC
+3. Edit Text/Image  (Images must be already hosted in public resources in AC)
+4. Edit Hyperlinks
+5. Edit Source code
+6. Export the modified email to an existing delivery in AC
+7. Export the modified email as new email template in AC
 
 
 Installation Instructions
@@ -15,11 +25,4 @@ Installation Instructions
 8. Add the sampleEmailTemplate in Delivery Templates folder in your AC server folder "nmsDeliveryModel".
 9. Make sure the editable blocks in your email template contains class contentBox. For ex if repeating outer tag in your email is a div, then all divs must have class contentBox, if all repeating modules in your template are a table, then all of them must have class "contentBox".  A sample email template is added in repo.
 
-Features:
-1. Arrange Bloacks
-2. Add/Drop blocks from personalization blocks from AC
-3. Edit Text/Image
-4. Edit Hyperlinks
-5. Edit Source code
-6. Export the modified email to an existing delivery in AC
-7. Export the modified email as new email template in AC
+
