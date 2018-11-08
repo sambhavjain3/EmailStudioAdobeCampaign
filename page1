@@ -1,12 +1,16 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:fb="http://ogp.me/ns/fb#">   
-<head>     
+<head>  
+<!-- This webapp for AC v6.1 is a project to provide the WYSWYG editor to edit email templates -->
+<!-- This code can be distributed or used by giving proper credit to the author -->
+<!-- Author: Sambhav Jain (https://github.com/sambhavjain3 ) -->
+<!-- V0.1 -->
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" /> 
 <meta property="og:image" content="https://yourserver/res/partners/b0d40ce8df0b7d997a94f98db349acf4.jpg" />    
 <link rel="stylesheet" type="text/css" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>      
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script src="https://yourserver/res/partners/524ae0cfb507a786266d32d9a16ccc42.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+   
 
 <%
 
