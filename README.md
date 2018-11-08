@@ -17,8 +17,8 @@ Installation Instructions
 1. Create a webapp with just two webpages page1 and page 2
 2. Update the source of the pages as provided in repository
 3. update the yourserver to to your AC server name
-4. Create a jssp page with the source as provided in repo with same name and update the path of jssp page in page1 and page2 whereever required
-5. Host the other resources in AC resources and update the path in page1 and pag2 source
+4. Create a jssp page with the source as provided in repo with same name and update the path of jssp page in page1 and page2 where ever required. Also update the logon escalation in jssp to an operator which has read/write permissions to schemas
+5. Host the other resources in AC resources and update the path in page1 and page2 source
 6. Create a personalization blocks type folder with internal name "contentBlocks" 
 7. Break your Email template HTML in to sections and create blocks like header/footer/modules in content block folder (samples provided in resources)
 8. Add the sampleEmailTemplate in Delivery Templates folder in your AC server folder "nmsDeliveryModel".
