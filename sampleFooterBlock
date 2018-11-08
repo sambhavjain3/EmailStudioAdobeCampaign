@@ -1,0 +1,17 @@
+<table class="footer contentBox" style="margin-top: 50px; color: rgb(152, 156, 165); text-align: center; font-size: 11px; padding-top: 5px; padding-right: 5px; padding-bottom: 5px; padding-left: 5px;" align="center">               
+<tbody><tr>                 
+<td class="footer-cell">                   
+<div class="c2577" style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;">                     
+<p class="footer-info">    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua                 </p>                     
+<p>                       <a class="link" href="https://google.com" style="color: rgb(217, 131, 166);">test link</a>                       
+<br>                     
+</p>                   
+</div>                   
+<div class="c2421" style="padding-top: 10px; padding-right: 10px; padding-bottom: 10px; padding-left: 10px;">  BUILT FOR <a class="link" href="https://google.com" style="color: rgb(217, 131, 166);">Adobe Campaign</a>                     
+<p>                     
+</p>                   
+</div>                 
+</td>               
+</tr>             
+</tbody>
+</table>
