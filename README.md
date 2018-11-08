@@ -26,3 +26,6 @@ Installation Instructions
 9. Make sure the editable blocks in your email template contains class contentBox. For ex if repeating outer tag in your email is a div, then all divs must have class contentBox, if all repeating modules in your template are a table, then all of them must have class "contentBox".  A sample email template is added in repo.
 
 
+App Interface:
+![App Interface](https://raw.githubusercontent.com/sambhavjain3/adobeCampaignClassic/master/page2EditTemplate.png)
+
