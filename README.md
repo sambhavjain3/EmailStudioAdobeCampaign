@@ -1,6 +1,5 @@
-# adobeCampaignClassic
-AC codes
-Webapp to allow WYSWYG editor for email templates in AC v6.1
+# EmailStudio
+EMail STudio is a Webapp providing WYSWYG editor for modifying email templates in AC v6.1
 Once configured, this webapp can be used by non technical users to modify the email templates and use them in campaigns with out any dependency on devs. 
 
 Features:
