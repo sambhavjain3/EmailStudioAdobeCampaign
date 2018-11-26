@@ -804,11 +804,7 @@ $("#messageBox").modal();
 function getLatestHTML()
 {
 var msgTxt = $("#templateFrame").html();
-msgTxt = htmlContentHeader + '<body ' +  bodyStyle +' >' + msgTxt +'
-// ]]></script>
-</div>
-</div>
-</body>'+ htmlContentFooter;
+msgTxt = htmlContentHeader + '<body ' +  bodyStyle +' >' + msgTxt +'</body>'+ htmlContentFooter;
 msgTxt = html_beautify(msgTxt);
 return msgTxt;
 
